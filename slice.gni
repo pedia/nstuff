@@ -1,0 +1,76 @@
+template("slice") {
+  assert(defined(invoker.sources), "Need sources defined for $target_name")
+
+  action_name = "${target_name}_action"
+  # 
+  source_set_name = target_name# invoker.target
+  print("slice source_set_name:", source_set_name)
+
+  action_foreach(action_name) {
+    script = "//build/run_slice2cpp.py"
+    sources = invoker.sources
+    target = target_name #invoker.target
+
+    if (defined(invoker.outdir)) {
+      outdir = rebase_path(invoker.outdir, root_build_dir)
+    }
+    else {
+      outdir = rebase_path("$target_out_dir/$target", root_build_dir)
+    }
+
+    inputs = [  ]
+
+    outputs = [
+      "$target_out_dir/$target/{{source_name_part}}.h",
+      "$target_out_dir/$target/{{source_name_part}}.cc",
+    ]
+
+    print("outputs:", outputs)
+
+    args = [
+      "slice2cpp",
+      "--impl-c++11",
+      "--source-ext",
+      "cc",
+    ]
+
+    if (defined(invoker.defines)) {
+      foreach(def, invoker.defines) {
+        args += [ "-D$def" ]
+      }
+    }
+
+    if (defined(invoker.include_dirs)) {
+      foreach(include, invoker.include_dirs) {
+        args += [ "-I" + rebase_path(include, root_build_dir) ]
+      }
+    }
+
+    args += [
+      "--depend-file",
+      rebase_path(outputs[0] + ".d", root_build_dir),
+      "--output-dir",
+      outdir,
+      # rebase_path(outputs[0], root_build_dir),
+      "{{source}}",
+    ]
+    depfile = outputs[0] + ".d"
+  }
+
+  static_library(source_set_name) {
+    print("inner-lib target_name:", target_name)
+    if (defined(invoker.visibility)) {
+      visibility = invoker.visibility
+    }
+
+    sources = get_target_outputs(":$action_name")
+    # include_dirs = [ "$target_out_dir/$target_name" ]
+
+    deps = [
+      ":$action_name",
+      "//cpp/src:slice2cpp",
+    ]
+  }
+}
+
+# slice -> .h .cpp -> libslice.a

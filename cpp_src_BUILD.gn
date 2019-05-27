@@ -1,0 +1,106 @@
+static_library("iceutil") {
+  # TODO: defines = [ "ICE_LIBBACKTRACE" ]
+  sources = [
+    "IceUtil/ConsoleUtil.cpp",
+    "IceUtil/CtrlCHandler.cpp",
+    "IceUtil/FileUtil.cpp",
+    "IceUtil/InputUtil.cpp",
+    "IceUtil/MutexProtocol.cpp",
+    "IceUtil/Options.cpp",
+    "IceUtil/OutputUtil.cpp",
+    "IceUtil/Random.cpp",
+    "IceUtil/RecMutex.cpp",
+    "IceUtil/Shared.cpp",
+    "IceUtil/StringConverter.cpp",
+    "IceUtil/StringUtil.cpp",
+    "IceUtil/ThreadException.cpp",
+    "IceUtil/Time.cpp",
+    "IceUtil/UUID.cpp",
+    "IceUtil/UtilException.cpp",
+  ]
+
+  include_dirs = [
+    ".",
+    "../include",
+  ]
+
+  if (current_os != "mac") {
+    sources += [
+      "IceUtil/ConvertUTF.cpp",
+      "IceUtil/Unicode.cpp",
+    ]
+  }
+
+  # include_dirs = [ "//slice" ]
+
+  deps = [
+    # "//slice:ice"
+  ]
+}
+
+#
+# TODO:
+# Slice_bisonflags := --name-prefix "slice_"
+#
+static_library("iceslice") {
+  sources = [
+    "Slice/CPlusPlusUtil.cpp",
+    "Slice/Checksum.cpp",
+    "Slice/FileTracker.cpp",
+    "Slice/Grammar.cpp",
+    "Slice/JavaUtil.cpp",
+    "Slice/MD5.cpp",
+    "Slice/MD5I.cpp",
+    "Slice/PHPUtil.cpp",
+    "Slice/Parser.cpp",
+    "Slice/Preprocessor.cpp",
+    "Slice/Python.cpp",
+    "Slice/PythonUtil.cpp",
+    "Slice/Ruby.cpp",
+    "Slice/RubyUtil.cpp",
+    "Slice/Scanner.cpp",
+    "Slice/SliceUtil.cpp",
+    "Slice/StringLiteralUtil.cpp",
+  ]
+
+  include_dirs = [
+    ".",
+    "../include",
+  ]
+
+  if (current_os != "mac") {
+    sources += [
+      "IceUtil/ConvertUTF.cpp",
+      "IceUtil/Unicode.cpp",
+    ]
+  }
+
+  # include_dirs = [ "//slice" ]
+
+  deps = [
+    # "//slice:ice"
+  ]
+}
+
+# ice_slice
+# iceutil_slice
+
+executable("slice2cpp") {
+  sources = [
+    "slice2cpp/Gen.cpp",
+    "slice2cpp/Gen.h",
+    "slice2cpp/Main.cpp",
+  ]
+  include_dirs = [
+    ".",
+    "../include",
+  ]
+  deps = [
+    ":iceslice",
+    ":iceutil",
+  ]
+
+  # defines = []
+  lib_dirs = [ "/usr/local/lib" ]
+  libs = [ "mcpp" ]
+}
