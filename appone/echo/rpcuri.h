@@ -30,6 +30,8 @@ namespace arch {
 
 // --Ice.Default.Locator="CacheGrid/Locator:tcp -h xx.xx.xx.xx -p 1234"
 
+// iceu://host:port/service?timeout=100&backup=encoded...
+
 class RpcUri {
 public:
   enum ProtocolType { UDP, TCP };
@@ -37,7 +39,13 @@ public:
   int port;
   ProtocolType type;
   std::string grid;
+  std::string protocol;
+  std::string query;
   RpcUri *backup;
+
+  RpcUri(grid)
+
+  static bool Parse(const std::string &uri, RpcUri *result);
 };
 
 // forward declare
