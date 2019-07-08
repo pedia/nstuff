@@ -1,9 +1,13 @@
-model one {
+module one {
 
-struct Topic {};
+struct Topic {
+  int id;
+};
+
+sequence<Topic> Topics;
 
 interface Page {
-  sequence<Topic> topics(int offset, int limit);
+  Topics fetch(int offset, int limit);
 };
   
-};
+}

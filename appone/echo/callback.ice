@@ -1,4 +1,4 @@
-model one {
+module one {
 
 interface Sinker {
   void sink();
@@ -6,6 +6,7 @@ interface Sinker {
 
 interface Callback {
   void listen(Sinker* o);
+  void unlisten(Sinker* o);
 
   void sinkLater(int seconds);
 

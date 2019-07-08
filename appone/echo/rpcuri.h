@@ -11,42 +11,35 @@
 
 namespace arch {
 
-// Ice 某些部分设计过于复杂，希望用一个普通字符串表示一个服务
-// 如: channel|host:port/server?timeout=1000
-// 更优雅一点形式:  rpc://host:port/server?timeout=1000
+// TODO:
+// 希望用一个普通字符串表示一个服务
+// 更优雅一点形式:  tcp://host:port/server?timeout=1000
 
-// 折衷为:
-// 为了能从一个字符串创建一个 Ice::ProxyPtr, 需要表示集群，特增加 channel
-// rpcuri为以下2种形式
-// channel|object proxy
-// proxy
-
-// 如:
-// -------------- proxy -----------
-// Cache:tcp -h xx.xx.xx.xx -p 1234
-
-// -------------- channel ---------------------|-proxy-
-// CacheGrid/Locator:tcp -h xx.xx.xx.xx -p 1234|Cache
+// 现在 Ice 的形式:
+// -------------- proxy --------------
+// Locator:tcp -h xx.xx.xx.xx -p 1234
+// Grid/Locator:tcp -h xx.xx.xx.xx -p 1234
+// Grid/Locator:tcp -h xx.xx.xx.xx -p 1234:tcp -h xx.xx.xx.xx -p 1234
 
 // --Ice.Default.Locator="CacheGrid/Locator:tcp -h xx.xx.xx.xx -p 1234"
 
-// iceu://host:port/service?timeout=100&backup=encoded...
+// class RpcUri {
+// public:
+//   enum ProtocolType { UDP, TCP };
+//   std::string host;
+//   int port;
+//   ProtocolType type;
+//   std::string grid;
+//   std::string protocol;
+//   std::string query;
+//   RpcUri *backup;
 
-class RpcUri {
-public:
-  enum ProtocolType { UDP, TCP };
-  std::string host;
-  int port;
-  ProtocolType type;
-  std::string grid;
-  std::string protocol;
-  std::string query;
-  RpcUri *backup;
+//   RpcUri(grid)
 
-  RpcUri(grid)
+//   static bool Parse(const std::string &uri, RpcUri *result);
+// };
 
-  static bool Parse(const std::string &uri, RpcUri *result);
-};
+// TODO: 
 
 // forward declare
 inline Ice::CommunicatorPtr CreateChannel(const std::string &default_locator);

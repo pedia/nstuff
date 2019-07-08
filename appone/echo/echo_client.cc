@@ -5,10 +5,10 @@
 
 #include <Ice/Ice.h>
 
+#include "async.h"
+#include "callback.h"
 #include "echo.h"
 #include "page.h"
-#include "callback.h"
-#include "async.h"
 
 void Dump(const Ice::CommunicatorPtr &c) {
   std::cout << "bool check:" << (bool)c << std::endl;
@@ -16,18 +16,42 @@ void Dump(const Ice::CommunicatorPtr &c) {
   std::vector<std::string> ss = ps->getCommandLineOptions();
   std::cout << "properties:" << std::endl;
   for (auto s : ss)
-    std::cout << " " << s << std::endl;
+    std::cout << "  " << s << std::endl;
 }
 
 void TestPage(const Ice::CommunicatorPtr &c) {
   auto base = c->stringToProxy("OnePage:default -p 10000");
   auto o = Ice::checkedCast<one::PagePrx>(base);
   if (!o) {
-    throw "Invalid proxy";
+    throw std::runtime_error("invalid prx: OnePage");
   }
+  std::cout << "\nPage id: " << o->ice_id() << std::endl;
 
   auto topics = o->fetch(0, 5);
-  std::cout << "\nPage.fetch: " << topics.size() << std::endl;
+  std::cout << "  fetch: " << topics.size() << std::endl;
+}
+
+class SinkerI : public one::Sinker {
+public:
+  void sink(const Ice::Current &) {
+    //
+    std::cout << "  sinked." << std::endl;
+  }
+};
+
+auto sinker = std::make_shared<SinkerI>();
+
+void TestCallback(const Ice::CommunicatorPtr &c) {
+  auto base = c->stringToProxy("OneCallback:default -p 10000");
+  auto o = Ice::checkedCast<one::CallbackPrx>(base);
+  if (!o) {
+    throw std::runtime_error("invalid prx: OneCallback");
+  }
+  std::cout << "\nCallback id: " << o->ice_id() << std::endl;
+
+  // o->listen(sinker);
+  // std::cout << "  fetch: " << topics.size() << std::endl;
+  // o->unlisten(sinker);
 }
 
 int main(int argc, char *argv[]) {
@@ -45,7 +69,8 @@ int main(int argc, char *argv[]) {
 
     echo->echoVoid2();
 
-    std::cout << "\nechoInt: " << echo->echoInt(3) << std::endl;
+    std::cout << "\nEcho id: " << echo->ice_id() << std::endl;
+    std::cout << "echoInt: " << echo->echoInt(3) << std::endl;
 
     int o = 0;
     std::cout << "echoInt2: " << echo->echoInt2(4, o) << " out: " << o
@@ -71,6 +96,7 @@ int main(int argc, char *argv[]) {
     }
 
     TestPage(ich.communicator());
+    TestCallback(ich.communicator());
 
   } catch (const std::exception &e) {
     std::cerr << "outside exception: " << e.what() << std::endl;
