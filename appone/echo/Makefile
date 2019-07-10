@@ -1,6 +1,6 @@
 .PHONY: slice all
 
-all: slice echo libecho.so echo_client test bench grpc_echo
+all: slice echo libecho.so echo_client test bench grpc_echo grpc_async_echo
 
 echo.cpp: echo.ice
 	slice2cpp echo.ice
@@ -39,3 +39,6 @@ grpc_bench.grpc.pb.cc: grpc_bench.proto
 
 grpc_echo: grpc_echo.o
 	clang -stdlib=libstdc++ -lc++ -std=c++11 ${LDFLAGS} -lIce++11 -o grpc_echo grpc_echo.o grpc_bench.pb.o grpc_bench.grpc.pb.o -lgrpc++ -lgrpc -lprotobuf -lgrpcpp_channelz -lcares -lz
+
+grpc_async_echo: grpc_async_echo.o
+	clang -stdlib=libstdc++ -lc++ -std=c++11 ${LDFLAGS} -lIce++11 -o grpc_async_echo grpc_async_echo.o grpc_bench.pb.o grpc_bench.grpc.pb.o -lgrpc++ -lgrpc -lprotobuf -lgrpcpp_channelz -lcares -lz
