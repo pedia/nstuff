@@ -4,6 +4,7 @@
 
 using namespace arch;
 
+#if 0
 TEST(Rpcuri, String) {
   RpcUri result;
   bool flag = false;
@@ -29,6 +30,7 @@ TEST(Rpcuri, String) {
   flag = RpcUri::Parse("localhost?&foo=1:2:3", &result);
   EXPECT_TRUE(flag);
 }
+#endif
 
 TEST(Rpcuri, CreateChannelTest) {}
 

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package grpc_bench;
+
+message Empty{}
+
+message OneInt{
+  int32 a = 1;
+}
+
+service Echo {
+  rpc echoVoid(Empty) returns (Empty);
+  rpc echoInt(OneInt) returns (OneInt);
+}

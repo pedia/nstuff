@@ -2,7 +2,7 @@
 #define ONE_LOCATOR_H__
 
 #include <Ice/Ice.h>
-#include <IceGrid/Query.h>
+#include <IceGrid/Registry.h>
 
 // #include "base/common.h"
 // #include "base/network.h"
