@@ -1,0 +1,18 @@
+/data/logs/budejie/*_access.log {
+  daily
+  size 100k
+  missingok
+  rotate 52
+  #olddir /data/logs/raw
+  #compress
+  #dateext
+  delaycompress
+  #notifempty
+  #createi 640 root adm
+  sharedscripts
+  #dateformat .%Y%m%d
+  postrotate
+    #[ ! -f /opt/logs/nginx.pid ] || kill -USR1 `cat /opt/logs/nginx.pid`
+    /opt/sbin/nginx -s reload > /dev/null 2>&1 || true
+  endscript
+}
